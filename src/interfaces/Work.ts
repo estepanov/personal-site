@@ -1,7 +1,7 @@
 export interface Images {
   id: string
   publicURL: string
-  childImageSharp?: {
+  childImageSharp: {
     resize: {
       src: string
     }

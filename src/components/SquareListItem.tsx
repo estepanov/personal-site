@@ -12,6 +12,7 @@ import { ProjectBannersEnum, ProjectSizeEnum } from '../interfaces/Project'
 import { Images } from '../interfaces/Work'
 import BannerImageList from './blog/BannerImageList'
 import { Modes } from '../styles/colors'
+import ImageCycler from './ImageCycler'
 
 interface SquareListItemProps {
   size?: string
@@ -28,7 +29,7 @@ interface SquareListItemProps {
 const SquareListItem: React.FC<SquareListItemProps> = ({ banner, banners, excerpt, date, size, tech, title, images, linkTo }) => {
   const bgImg = images?.[0].childImageSharp?.resize?.src
   const theme = useThemeUI()
-  const oppositeDeep = theme.colorMode === Modes.dark ? lighten : darken
+  const oppositeDeep = theme.colorMode === Modes.dark ? lighten : darken;
   return (
     <Link
       to={linkTo}
@@ -50,22 +51,25 @@ const SquareListItem: React.FC<SquareListItemProps> = ({ banner, banners, excerp
           background: t => `linear-gradient(to bottom right, ${lighten('text', 0.05)(t)}, ${darken('text', 0.1)(t)})`,
           color: 'background',
           boxShadow: t => `0px 0px 10px ${oppositeDeep('muted', 0.1)(t)}`,
-          '& .proj-name': {
+          '.proj-name': {
             color: 'background',
             textShadow: `0px 0px 0px ${theme.theme.colors?.background}`
           },
-          '& .proj-body': {
+          '.proj-body': {
             color: 'background',
             textShadow: `1px 1px 0px ${theme.theme.colors?.text}`
           },
-          '& .proj-bg img': {
-            transform: 'rotate3D(0,-0.5,-0.5,0.1turn) scale(1.43)',
+          '.proj-bg': {
             opacity: 0.15
+          },
+          '.proj-bg img': {
+            transform: 'translate(-50%, -50%) rotate3D(0,-0.5,-0.5,0.1turn) scale(1.13)',
+            animationPlayState: 'running'
           }
         }
       }}
     >
-      <Flex
+      {images?.length && < Flex
         className="proj-bg"
         sx={{
           position: 'absolute',
@@ -76,14 +80,27 @@ const SquareListItem: React.FC<SquareListItemProps> = ({ banner, banners, excerp
           bottom: 0,
           overflow: 'hidden',
           justifyContent: 'center',
-          alignItems: 'center'
+          alignItems: 'center',
+          opacity: 0.3,
         }}
       >
-        <img
+        <ImageCycler
+          sources={images.map(i => ({ src: i.childImageSharp.resize.src }))}
+          imgSx={{
+            transition: 'transform ease-in-out 2s',
+            position: 'absolute',
+            animationPlayState: 'paused',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%) rotate3D(1,0,-3,-20deg) scale(2)',
+            width: '100%',
+          }}
+        />
+        {/* <img
           sx={{ transform: 'rotate3D(1,0,-3,-20deg) scale(2)', opacity: 0.1, width: '100%', transition: 'transform ease-in-out 2s' }}
           src={bgImg}
-        />
-      </Flex>
+        /> */}
+      </Flex>}
       <Flex
         sx={{
           zIndex: 1,
@@ -158,7 +175,7 @@ const SquareListItem: React.FC<SquareListItemProps> = ({ banner, banners, excerp
         </Flex>
       </Flex>
       {banner && <BannerImageList image={banner} />}
-    </Link>
+    </Link >
   )
 }
 
